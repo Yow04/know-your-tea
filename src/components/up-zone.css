@@ -1,0 +1,108 @@
+.upload-zone {
+  border: 1.5px dashed var(--glass-border);
+  border-radius: 16px;
+  padding: 36px 22px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  background: var(--glass-bg);
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-zone:hover,
+.upload-zone.dragging {
+  border-color: var(--glass-border-hover);
+  background: rgba(94, 232, 122, 0.06);
+  box-shadow: 0 0 0 1px rgba(94, 232, 122, 0.08);
+}
+
+.upload-zone.dragging {
+  border-color: var(--accent-300);
+  background: rgba(94, 232, 122, 0.1);
+}
+
+.upload-zone.has-preview {
+  padding: 0;
+  overflow: hidden;
+  border-style: solid;
+  border-color: rgba(94, 232, 122, 0.4);
+  cursor: default;
+  min-height: 200px;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.upload-icon-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(94, 232, 122, 0.18);
+  border: 1px solid rgba(94, 232, 122, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-300);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.upload-zone:hover .upload-icon-ring {
+  transform: translateY(-2px);
+  background: rgba(94, 232, 122, 0.24);
+}
+
+.upload-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.45;
+  max-width: 280px;
+}
+
+.preview-container {
+  position: relative;
+  width: 100%;
+}
+
+.preview-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.change-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(6, 12, 9, 0.88);
+  border: 1px solid rgba(94, 232, 122, 0.35);
+  border-radius: 8px;
+  color: var(--accent-200);
+  font-size: 11px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s ease;
+}
+
+.change-btn:hover {
+  background: rgba(6, 12, 9, 0.96);
+}

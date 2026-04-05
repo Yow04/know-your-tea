@@ -1,0 +1,53 @@
+:root {
+  --green-900: #0b1410;
+  --green-950: #060a08;
+  --accent-200: #8ef4a4;
+  --accent-300: #5ee87a;
+  --accent-400: #34c759;
+  --accent-deep: #1a4d2e;
+  --text-primary: #f2f7f3;
+  --text-secondary: #a8b5ad;
+  --text-muted: #6d7d74;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(94, 232, 122, 0.35);
+  --glass-border-hover: rgba(94, 232, 122, 0.55);
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.09);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--green-950);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+#root {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  min-height: 100svh;
+  text-align: initial;
+  border: none;
+  display: block;
+}
+
+p {
+  margin: 0;
+}

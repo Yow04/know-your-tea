@@ -1,0 +1,58 @@
+.leaf-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.leaf-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 58%;
+  min-width: 280px;
+  height: 100%;
+}
+
+.leaf-blobs {
+  filter: blur(0.5px);
+}
+
+.leaf-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(10, 26, 13, 0.05) 0%,
+    rgba(10, 26, 13, 0.45) 45%,
+    rgba(10, 26, 13, 0.92) 68%,
+    rgba(10, 26, 13, 0.98) 100%
+  );
+}
+
+.leaf { transform-origin: center bottom; }
+.leaf-1 { animation: sway1 8s ease-in-out infinite; }
+.leaf-2 { animation: sway2 10s ease-in-out infinite; }
+.leaf-3 { animation: sway3 7s ease-in-out infinite; }
+.leaf-4 { animation: sway1 9s ease-in-out infinite reverse; }
+.leaf-5 { animation: sway2 6s ease-in-out infinite; }
+
+@keyframes sway1 {
+  0%, 100% { transform: rotate(0deg) translateX(0px); }
+  50%       { transform: rotate(0.8deg) translateX(3px); }
+}
+@keyframes sway2 {
+  0%, 100% { transform: rotate(0deg) translateY(0px); }
+  50%       { transform: rotate(-0.5deg) translateY(-4px); }
+}
+@keyframes sway3 {
+  0%, 100% { transform: rotate(0deg); }
+  40%       { transform: rotate(1deg); }
+  80%       { transform: rotate(-0.4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf-blobs { filter: none; }
+  .leaf { animation: none; }
+}
