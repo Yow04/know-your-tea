@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import LeafBackground from './components/bg-temp';
 import UploadZone from './components/up-zone';
 import ResultCard from './components/result-card';
+import HistorySect from './components/history-sect';
 import { predictDisease, healthCheck } from './Api';
 import './App.css';
 
@@ -14,18 +15,49 @@ const DISEASE_INFO = {
   'Green mirid bug'    : 'Kerusakan akibat hama Helopeltis bradyi. Bercak nekrotik coklat pada pucuk dan daun muda.',
   'Healthy leaf'       : 'Daun teh dalam kondisi sehat. Tidak ditemukan tanda-tanda penyakit.',
 };
+
+// konversi file ke base64 agar bisa disimpan di localStorage
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function App() {
-  const [preview, setPreview] = useState(null);
-  const [file, setFile] = useState(null);
-  const [result, setResult]   = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError]     = useState(null);
+  const [preview, setPreview]         = useState(null);
+  const [file, setFile]               = useState(null);
+  const [result, setResult]           = useState(null);
+  const [isLoading, setIsLoading]     = useState(false);
+  const [error, setError]             = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // load history dari localStorage saat pertama kali render
+  const [history, setHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem('kyt-history');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // sync history ke localStorage setiap kali berubah
+  useEffect(() => {
+    try {
+      localStorage.setItem('kyt-history', JSON.stringify(history));
+    } catch {
+      console.warn('localStorage penuh atau tidak tersedia');
+    }
+  }, [history]);
 
   useEffect(() => {
     healthCheck()
       .then(res => console.log('Backend terhubung:', res))
       .catch(err => console.error('Backend gagal:', err.message))
-  }, [])
+  }, []);
 
   const handleFileSelect = useCallback((selectedFile) => {
     setFile(selectedFile);
@@ -40,17 +72,35 @@ export default function App() {
     setError(null);
     setResult(null);
     try {
-      const data = await predictDisease(file);
-      console.log('Response backend:', data);
-      setResult({
-        disease : data.predicted_class.replace(/^\d+\.\s*/, ''),
-        confidence: data.confidence,
+      const [data, base64] = await Promise.all([
+        predictDisease(file),
+        fileToBase64(file), // konversi bersamaan dengan request
+      ]);
+
+      const diseaseName = data.predicted_class.replace(/^\d+\.\s*/, '');
+
+      const mapped = {
+        disease          : diseaseName,
+        confidence       : data.confidence,
         inference_time_ms: data.inference_time_ms,
-        topPredictions: data.top_k.map(item => ({
+        topPredictions   : data.top_k.map(item => ({
           label: item.class_name.replace(/^\d+\.\s*/, ''),
-          score: item.confidence,})),
-          description: DISEASE_INFO[data.predicted_class.replace(/^\d+\.\s*/, '')] || 'Deskripsi tidak tersedia.'
-      })
+          score: item.confidence,
+        })),
+        description: DISEASE_INFO[diseaseName] || 'Deskripsi tidak tersedia.',
+      };
+
+      setResult(mapped);
+
+      // simpan ke history, maksimal 20 item
+      setHistory(prev => [{
+        id        : Date.now(),
+        preview   : base64,
+        disease   : mapped.disease,
+        confidence: mapped.confidence,
+        time      : new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+      }, ...prev].slice(0, 20));
+
     } catch {
       setError('Gagal menghubungi server. Pastikan backend berjalan.');
     } finally {
@@ -66,13 +116,24 @@ export default function App() {
     setIsLoading(false);
   }, []);
 
-  
+  const handleClearHistory = useCallback(() => {
+    setHistory([]);
+    setShowHistory(false);
+  }, []);
 
   return (
     <div className="app">
       <LeafBackground />
 
       <div className="app-content">
+
+        {/* tombol riwayat — muncul hanya jika ada history */}
+        {history.length > 0 && (
+          <button className="btn-history" onClick={() => setShowHistory(true)}>
+            Riwayat ({history.length})
+          </button>
+        )}
+
         <div className="badge">
           <span className="badge-dot" />
           <span className="badge-text">ConvNeXt-T powered</span>
@@ -86,7 +147,8 @@ export default function App() {
             <span className="heading-tail">dini</span>
           </h1>
           <p className="heading-sub">
-            Upload foto daun teh Anda dan sistem akan menganalisis potensi penyakit secara otomatis dalam hitungan detik.
+            Upload foto daun teh Anda dan sistem akan menganalisis potensi
+            penyakit secara otomatis dalam hitungan detik.
           </p>
         </div>
 
@@ -100,10 +162,7 @@ export default function App() {
             disabled={!preview || isLoading}
           >
             {isLoading ? (
-              <>
-                <span className="spinner" />
-                Menganalisis...
-              </>
+              <><span className="spinner" />Menganalisis...</>
             ) : (
               'Analisis gambar'
             )}
@@ -117,6 +176,15 @@ export default function App() {
 
         <ResultCard result={result} isLoading={isLoading} />
       </div>
+
+      {/* modal history */}
+      {showHistory && (
+        <HistorySect
+          history={history}
+          onClose={() => setShowHistory(false)}
+          onClear={handleClearHistory}
+        />
+      )}
     </div>
   );
 }
