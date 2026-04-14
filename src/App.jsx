@@ -1,44 +1,72 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import LeafBackground from './components/bg-temp';
 import UploadZone from './components/up-zone';
 import ResultCard from './components/result-card';
-import { mockPredictDisease } from './Api';
+import { predictDisease, healthCheck } from './Api';
 import './App.css';
 
+const DISEASE_INFO = {
+  'Tea algal leaf spot': 'Disebabkan oleh alga Cephaleuros virescens. Ditandai dengan bercak oranye-kemerahan pada permukaan daun.',
+  'Brown Blight'       : 'Disebabkan oleh jamur Colletotrichum camelliae. Bercak coklat dengan tepi kuning yang meluas cepat.',
+  'Gray Blight'        : 'Disebabkan oleh jamur Pestalotiopsis theae. Bercak abu-abu dengan tepi coklat pada daun.',
+  'Helopeltis'         : 'Kerusakan akibat serangan hama Helopeltis. Bercak coklat kehitaman dengan titik di tengah.',
+  'Red spider'         : 'Serangan tungau Oligonychus coffeae. Daun tampak kemerahan dan kusam akibat hisapan tungau.',
+  'Green mirid bug'    : 'Kerusakan akibat hama Helopeltis bradyi. Bercak nekrotik coklat pada pucuk dan daun muda.',
+  'Healthy leaf'       : 'Daun teh dalam kondisi sehat. Tidak ditemukan tanda-tanda penyakit.',
+};
 export default function App() {
   const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState(null);
   const [result, setResult]   = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]     = useState(null);
 
-  const handleFileSelect = useCallback((file) => {
-    setPreview(URL.createObjectURL(file));
+  useEffect(() => {
+    healthCheck()
+      .then(res => console.log('Backend terhubung:', res))
+      .catch(err => console.error('Backend gagal:', err.message))
+  }, [])
+
+  const handleFileSelect = useCallback((selectedFile) => {
+    setFile(selectedFile);
+    setPreview(URL.createObjectURL(selectedFile));
     setResult(null);
     setError(null);
   }, []);
 
   const handleAnalyze = useCallback(async () => {
-    if (!preview) return;
+    if (!file) return;
     setIsLoading(true);
     setError(null);
     setResult(null);
     try {
-      // Ganti mockPredictDisease dengan predictDisease(file) saat backend siap
-      const data = await mockPredictDisease();
-      setResult(data);
+      const data = await predictDisease(file);
+      console.log('Response backend:', data);
+      setResult({
+        disease : data.predicted_class.replace(/^\d+\.\s*/, ''),
+        confidence: data.confidence,
+        inference_time_ms: data.inference_time_ms,
+        topPredictions: data.top_k.map(item => ({
+          label: item.class_name.replace(/^\d+\.\s*/, ''),
+          score: item.confidence,})),
+          description: DISEASE_INFO[data.predicted_class.replace(/^\d+\.\s*/, '')] || 'Deskripsi tidak tersedia.'
+      })
     } catch {
       setError('Gagal menghubungi server. Pastikan backend berjalan.');
     } finally {
       setIsLoading(false);
     }
-  }, [preview]);
+  }, [file]);
 
   const handleReset = useCallback(() => {
     setPreview(null);
+    setFile(null);
     setResult(null);
     setError(null);
     setIsLoading(false);
   }, []);
+
+  
 
   return (
     <div className="app">

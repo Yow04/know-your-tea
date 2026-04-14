@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './result-card.css';
 
-const SEVERITY_CONFIG = {
-  ringan: { label: 'Tingkat ringan' },
-  sedang: { label: 'Tingkat sedang' },
-  berat: { label: 'Tingkat berat' },
-  sehat: { label: 'Daun sehat' },
-};
 
 export default function ResultCard({ result, isLoading }) {
   const [animated, setAnimated] = useState(false);
@@ -41,8 +35,7 @@ export default function ResultCard({ result, isLoading }) {
 
   if (!result) return null;
 
-  const { disease, confidence, severity, description, topPredictions } = result;
-  const sev = SEVERITY_CONFIG[severity] || SEVERITY_CONFIG.sedang;
+  const { disease, confidence, inference_time_ms, description, topPredictions } = result;
   const pct = Math.round(confidence * 100);
 
   return (
@@ -90,8 +83,8 @@ export default function ResultCard({ result, isLoading }) {
       {description && <p className="result-description">{description}</p>}
 
       <div className="result-tags">
-        <span className="result-tag">{sev.label}</span>
-        {severity !== 'sehat' && <span className="result-tag">Perlu penanganan</span>}
+        {disease && <span className="result-tag">{disease}</span>}
+        <span className="result-tag">{Math.round(inference_time_ms)} ms</span>
       </div>
     </div>
   );

@@ -2,13 +2,13 @@ import axios from 'axios'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-const api = axios.create({ baseURL: BASE_URL, timeout: 30000 })
+const api = axios.create({ baseURL: BASE_URL, timeout: 30000 , headers: { 'ngrok-skip-browser-warning': 'true' }})
 
 export async function predictDisease(imageFile) {
   const formData = new FormData()
-  formData.append('file', imageFile)
+  formData.append('file', imageFile, imageFile.name)
   const response = await api.post('/predict', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 'Content-Type': 'multipart/form-data' , 'ngrok-skip-browser-warning': 'true'},
   })
   return response.data
 }
