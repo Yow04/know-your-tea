@@ -28,6 +28,7 @@ export default function HistorySect({ history, onClose, onClear }) {
                     className="history-thumb"
                   />
                   <div className="history-info">
+                    <span className="history-label">Prediksi</span>
                     <span className="history-disease">{item.disease}</span>
                     <span className="history-confidence">
                       {Math.round(item.confidence * 100)}% confidence

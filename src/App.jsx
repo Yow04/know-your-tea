@@ -16,7 +16,6 @@ const DISEASE_INFO = {
   'Healthy leaf'       : 'Daun teh dalam kondisi sehat. Tidak ditemukan tanda-tanda penyakit.',
 };
 
-// konversi file ke base64 agar bisa disimpan di localStorage
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -34,7 +33,6 @@ export default function App() {
   const [error, setError]             = useState(null);
   const [showHistory, setShowHistory] = useState(false);
 
-  // load history dari localStorage saat pertama kali render
   const [history, setHistory] = useState(() => {
     try {
       const saved = localStorage.getItem('kyt-history');
@@ -44,7 +42,6 @@ export default function App() {
     }
   });
 
-  // sync history ke localStorage setiap kali berubah
   useEffect(() => {
     try {
       localStorage.setItem('kyt-history', JSON.stringify(history));
@@ -74,7 +71,7 @@ export default function App() {
     try {
       const [data, base64] = await Promise.all([
         predictDisease(file),
-        fileToBase64(file), // konversi bersamaan dengan request
+        fileToBase64(file),
       ]);
 
       const diseaseName = data.predicted_class.replace(/^\d+\.\s*/, '');
@@ -92,7 +89,6 @@ export default function App() {
 
       setResult(mapped);
 
-      // simpan ke history, maksimal 20 item
       setHistory(prev => [{
         id        : Date.now(),
         preview   : base64,
@@ -127,16 +123,11 @@ export default function App() {
 
       <div className="app-content">
 
-        {/* tombol riwayat — muncul hanya jika ada history */}
-        {history.length > 0 && (
+        {/*Topbar: badge + tombol riwayat sejajar, selalu tampil */}
+        <div className="app-topbar">
           <button className="btn-history" onClick={() => setShowHistory(true)}>
-            Riwayat ({history.length})
+            Riwayat analisis
           </button>
-        )}
-
-        <div className="badge">
-          <span className="badge-dot" />
-          <span className="badge-text">ConvNeXt-T powered</span>
         </div>
 
         <div className="heading-block">
@@ -153,6 +144,11 @@ export default function App() {
         </div>
 
         <div className="upload-zone-wrap">
+          <div className="badge">
+            <span className="badge-text">Didukung oleh arsitektur ConvNeXt-Tiny</span>
+            <span className="badge-dot" />
+          </div>
+
           <UploadZone onFileSelect={handleFileSelect} preview={preview} />
           {error && <p className="error-msg">{error}</p>}
           <button
@@ -177,7 +173,6 @@ export default function App() {
         <ResultCard result={result} isLoading={isLoading} />
       </div>
 
-      {/* modal history */}
       {showHistory && (
         <HistorySect
           history={history}

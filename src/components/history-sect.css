@@ -98,6 +98,14 @@
   flex: 1;
   min-width: 0;
 }
+.history-label{
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #86a87c;
+  margin-bottom: 2px;
+}
 
 .history-disease {
   font-size: 0.875rem;

@@ -9,6 +9,42 @@
     var(--green-900);
   overflow: hidden;
 }
+.app-topbar {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.btn-history {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(94, 232, 122, 0.08);
+  border: 1px solid rgba(94, 232, 122, 0.35);
+  color: var(--accent-200);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-history:hover {
+  background: rgba(94, 232, 122, 0.14);
+  border-color: rgba(94, 232, 122, 0.55);
+}
+
+.btn-history::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-300);
+  flex-shrink: 0;
+}
 
 .app-content {
   position: relative;
@@ -20,6 +56,9 @@
   align-items: flex-end;
   gap: 20px;
   animation: contentFadeIn 0.8s ease both;
+}
+.app-topbar .badge {
+  margin-left: 0;
 }
 
 .app-content > .badge,
@@ -36,6 +75,11 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.upload-zone-wrap .badge{
+  margin-right: 0;
+  width: fit-content;
 }
 
 @keyframes contentFadeIn {
@@ -205,6 +249,15 @@
     justify-content: center;
     padding: 40px 20px 48px;
     align-items: flex-start;
+  }
+
+  .app-topbar {
+    justify-content: stretch;
+  }
+
+  .btn-history {
+    font-size: 10px;
+    padding: 5px 12px;
   }
 
   .app-content {
